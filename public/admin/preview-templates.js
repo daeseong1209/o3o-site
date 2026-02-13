@@ -28,6 +28,27 @@
 	var PostPreview = window.createClass({
 		render: function () {
 			var entry = this.props.entry;
+			try {
+				var doc = this.props.document;
+				if (doc && doc.documentElement) {
+					var theme = null;
+					try {
+						theme = localStorage.getItem('theme');
+					} catch (e) {
+						theme = null;
+					}
+					if (theme !== 'dark' && theme !== 'light') {
+						theme =
+							window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+								? 'dark'
+								: 'light';
+					}
+					doc.documentElement.dataset.theme = theme;
+					doc.documentElement.style.colorScheme = theme;
+				}
+			} catch (e) {
+				// ignore
+			}
 			var title = entry.getIn(['data', 'title']) || 'Untitled';
 			var description = entry.getIn(['data', 'description']) || '';
 			var pubDate = entry.getIn(['data', 'pubDate']);
