@@ -21,7 +21,7 @@ const isActive = (href: string) => {
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<meta name="theme-color" content="#0b0f19" />
+		<meta name="theme-color" content="#f9fafb" />
 		<ViewTransitions />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,10 +39,17 @@ const isActive = (href: string) => {
 		<a class="skip" href="#content">Skip to content</a>
 		<header class="site-header">
 			<div class="container">
-				<a class="brand" href="/" aria-label="Home">
-					<span class="brand-mark" aria-hidden="true">o3o</span>
-					<span class="brand-dot">.</span>
-					<span class="brand-mark" aria-hidden="true">team</span>
+				<a class="brand" href="/" aria-label="o3o.team home">
+					<img
+						class="brand-logo"
+						src="/logo.webp"
+						width="28"
+						height="28"
+						alt=""
+						decoding="async"
+						onerror="this.onerror=null; this.src='/favicon.svg'"
+					/>
+					<span class="brand-text">o3o.team</span>
 				</a>
 				<nav class="nav">
 					<a href="/blog" aria-current={isActive('/blog') ? 'page' : undefined}>Blog</a>
