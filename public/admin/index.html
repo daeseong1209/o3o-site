@@ -6,6 +6,26 @@
 		<meta name="robots" content="noindex" />
 		<meta name="theme-color" content="#f2f4f6" />
 		<title>o3o.team CMS</title>
+		<script>
+			(function () {
+				try {
+					var key = 'theme';
+					var stored = localStorage.getItem(key);
+					var theme =
+						stored === 'dark' || stored === 'light'
+							? stored
+							: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+								? 'dark'
+								: 'light';
+					document.documentElement.dataset.theme = theme;
+					document.documentElement.style.colorScheme = theme;
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (meta) meta.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#f2f4f6');
+				} catch (e) {
+					// ignore
+				}
+			})();
+		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -18,9 +38,12 @@
 		<header class="cms-top">
 			<a class="cms-brand" href="/" rel="nofollow">← Back to site</a>
 			<span class="cms-title">Content Manager</span>
-			<a class="cms-link" href="https://github.com/daeseong1209/o3o-site/pulls" rel="nofollow">
-				PRs
-			</a>
+			<div class="cms-actions">
+				<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"></button>
+				<a class="cms-link" href="https://github.com/daeseong1209/o3o-site/pulls" rel="nofollow">
+					PRs
+				</a>
+			</div>
 		</header>
 		<div class="cms-shell">
 			<div id="nc-root"></div>
@@ -31,6 +54,81 @@
 			if (window.CMS && typeof window.CMS.registerPreviewStyle === 'function') {
 				window.CMS.registerPreviewStyle('/admin/preview.css');
 			}
+		</script>
+		<script>
+			(function () {
+				var key = 'theme';
+				var root = document.documentElement;
+				var btn = document.querySelector('[data-theme-toggle]');
+				if (!btn) return;
+
+				function getStoredTheme() {
+					try {
+						return localStorage.getItem(key);
+					} catch (e) {
+						return null;
+					}
+				}
+
+				function getTheme() {
+					return root.dataset.theme === 'dark' ? 'dark' : 'light';
+				}
+
+				function setMeta(theme) {
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (!meta) return;
+					meta.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#f2f4f6');
+				}
+
+				function update(theme) {
+					btn.textContent = theme === 'dark' ? 'Dark' : 'Light';
+					btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+					btn.setAttribute('title', 'Toggle theme');
+				}
+
+				function apply(theme, persist) {
+					root.dataset.theme = theme;
+					root.style.colorScheme = theme;
+					setMeta(theme);
+					if (persist) {
+						try {
+							localStorage.setItem(key, theme);
+						} catch (e) {
+							// ignore
+						}
+					}
+					update(theme);
+					try {
+						var iframes = document.querySelectorAll('iframe');
+						iframes.forEach(function (frame) {
+							if (frame.contentDocument && frame.contentDocument.documentElement) {
+								frame.contentDocument.documentElement.dataset.theme = theme;
+								frame.contentDocument.documentElement.style.colorScheme = theme;
+							}
+						});
+					} catch (e) {
+						// ignore
+					}
+				}
+
+				update(getTheme());
+				btn.addEventListener('click', function () {
+					apply(getTheme() === 'dark' ? 'light' : 'dark', true);
+				});
+
+				try {
+					if (!getStoredTheme() && window.matchMedia) {
+						var mq = window.matchMedia('(prefers-color-scheme: dark)');
+						var onChange = function (e) {
+							apply(e.matches ? 'dark' : 'light', false);
+						};
+						if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onChange);
+						else if (typeof mq.addListener === 'function') mq.addListener(onChange);
+					}
+				} catch (e) {
+					// ignore
+				}
+			})();
 		</script>
 	</body>
 </html>
