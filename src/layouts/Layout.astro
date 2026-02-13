@@ -22,6 +22,26 @@ const isActive = (href: string) => {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="theme-color" content="#f9fafb" />
+		<script is:inline>
+			(function () {
+				try {
+					var key = 'theme';
+					var stored = localStorage.getItem(key);
+					var theme =
+						stored === 'dark' || stored === 'light'
+							? stored
+							: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+								? 'dark'
+								: 'light';
+					document.documentElement.dataset.theme = theme;
+					document.documentElement.style.colorScheme = theme;
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (meta) meta.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#f9fafb');
+				} catch (e) {
+					// ignore
+				}
+			})();
+		</script>
 		<ViewTransitions />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -56,6 +76,12 @@ const isActive = (href: string) => {
 					<a href="/admin" rel="nofollow" aria-current={isActive('/admin') ? 'page' : undefined}>
 						CMS
 					</a>
+					<button
+						class="theme-toggle"
+						type="button"
+						data-theme-toggle
+						aria-label="Toggle theme"
+					></button>
 				</nav>
 			</div>
 		</header>
@@ -67,5 +93,69 @@ const isActive = (href: string) => {
 				<p>© {new Date().getFullYear()} o3o.team</p>
 			</div>
 		</footer>
+		<script is:inline>
+			(function () {
+				var key = 'theme';
+				var root = document.documentElement;
+				var btn = document.querySelector('[data-theme-toggle]');
+				if (!btn) return;
+
+				function getStoredTheme() {
+					try {
+						return localStorage.getItem(key);
+					} catch (e) {
+						return null;
+					}
+				}
+
+				function getTheme() {
+					return root.dataset.theme === 'dark' ? 'dark' : 'light';
+				}
+
+				function setMeta(theme) {
+					var meta = document.querySelector('meta[name="theme-color"]');
+					if (!meta) return;
+					meta.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#f9fafb');
+				}
+
+				function update(theme) {
+					btn.textContent = theme === 'dark' ? 'Dark' : 'Light';
+					btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+					btn.setAttribute('title', 'Toggle theme');
+				}
+
+				function apply(theme, persist) {
+					root.dataset.theme = theme;
+					root.style.colorScheme = theme;
+					setMeta(theme);
+					if (persist) {
+						try {
+							localStorage.setItem(key, theme);
+						} catch (e) {
+							// ignore
+						}
+					}
+					update(theme);
+				}
+
+				update(getTheme());
+				btn.addEventListener('click', function () {
+					apply(getTheme() === 'dark' ? 'light' : 'dark', true);
+				});
+
+				try {
+					if (!getStoredTheme() && window.matchMedia) {
+						var mq = window.matchMedia('(prefers-color-scheme: dark)');
+						var onChange = function (e) {
+							apply(e.matches ? 'dark' : 'light', false);
+						};
+						if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onChange);
+						else if (typeof mq.addListener === 'function') mq.addListener(onChange);
+					}
+				} catch (e) {
+					// ignore
+				}
+			})();
+		</script>
 	</body>
 </html>
