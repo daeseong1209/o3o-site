@@ -1,3 +1,14 @@
+---
+import '../styles/global.css';
+
+type Props = {
+	title?: string;
+	description?: string;
+};
+
+const { title = 'o3o.team', description } = Astro.props;
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -6,18 +17,26 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title}</title>
+		{description ? <meta name="description" content={description} /> : null}
 	</head>
 	<body>
-		<slot />
+		<header class="site-header">
+			<div class="container">
+				<a class="brand" href="/">o3o.team</a>
+				<nav class="nav">
+					<a href="/blog">Blog</a>
+					<a href="/admin" rel="nofollow">CMS</a>
+				</nav>
+			</div>
+		</header>
+		<main class="container main">
+			<slot />
+		</main>
+		<footer class="site-footer">
+			<div class="container">
+				<p>© {new Date().getFullYear()} o3o.team</p>
+			</div>
+		</footer>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

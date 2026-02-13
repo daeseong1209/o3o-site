@@ -1,11 +1,40 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 5);
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="o3o.team" description="o3o.team blog">
+	<section class="hero">
+		<h1>o3o.team</h1>
+		<p>Notes, updates, and writeups.</p>
+		<p class="hero-links">
+			<a class="button" href="/blog">Read the blog</a>
+			<a class="button secondary" href="/admin" rel="nofollow">Open CMS</a>
+		</p>
+	</section>
+
+	<section>
+		<h2>Latest</h2>
+		{posts.length === 0 ? (
+			<p>No posts yet.</p>
+		) : (
+			<ul class="post-list">
+				{posts.map((post) => (
+					<li>
+						<a href={`/blog/${post.slug}/`}>{post.data.title}</a>
+						<div class="muted">
+							{post.data.pubDate.toISOString().slice(0, 10)}
+						</div>
+					</li>
+				))}
+			</ul>
+		)}
+	</section>
 </Layout>
