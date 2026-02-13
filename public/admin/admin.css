@@ -13,17 +13,14 @@ body {
 }
 
 .cms-top {
-	position: sticky;
-	top: 0;
-	z-index: 20;
+	position: static;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 16px;
 	padding: 12px 14px;
 	border-bottom: 1px solid #e5e8eb;
-	background: rgba(255, 255, 255, 0.75);
-	backdrop-filter: blur(14px);
+	background: rgba(255, 255, 255, 0.92);
 }
 
 .cms-brand {
@@ -64,11 +61,12 @@ body {
 
 /* Decap CMS mounts into #nc-root */
 #nc-root {
-	min-height: calc(100vh - 54px);
+	min-height: 70vh;
 	border-radius: 16px;
-	overflow: hidden;
+	overflow: visible;
 	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
 	background: #ffffff;
+	border: 1px solid #e5e8eb;
 }
 
 @media (max-width: 520px) {
