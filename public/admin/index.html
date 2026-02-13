@@ -4,9 +4,33 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="robots" content="noindex" />
+		<meta name="theme-color" content="#f2f4f6" />
 		<title>o3o.team CMS</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Instrument+Sans:opsz,wght@8..14,400..700&family=Space+Grotesk:wght@400..700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="/admin/admin.css" />
 	</head>
 	<body>
+		<header class="cms-top">
+			<a class="cms-brand" href="/" rel="nofollow">← Back to site</a>
+			<span class="cms-title">Content Manager</span>
+			<a class="cms-link" href="https://github.com/daeseong1209/o3o-site/pulls" rel="nofollow">
+				PRs
+			</a>
+		</header>
+		<div class="cms-shell">
+			<div id="nc-root"></div>
+		</div>
 		<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+		<script src="/admin/preview-templates.js"></script>
+		<script>
+			if (window.CMS && typeof window.CMS.registerPreviewStyle === 'function') {
+				window.CMS.registerPreviewStyle('/admin/preview.css');
+			}
+		</script>
 	</body>
 </html>

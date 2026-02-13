@@ -15,9 +15,18 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
 		<ul class="post-list">
 			{posts.map((post) => (
 				<li>
-					<a href={`/blog/${post.slug}/`}>{post.data.title}</a>
-					<div class="muted">
-						{post.data.pubDate.toISOString().slice(0, 10)}
+					<a class="post-title" href={`/blog/${post.slug}/`}>{post.data.title}</a>
+					<div class="post-meta">
+						<time class="muted" datetime={post.data.pubDate.toISOString()}>
+							{post.data.pubDate.toISOString().slice(0, 10)}
+						</time>
+						{post.data.tags?.length ? (
+							<div class="pill-row">
+								{post.data.tags.slice(0, 4).map((t) => (
+									<span class="pill">{t}</span>
+								))}
+							</div>
+						) : null}
 					</div>
 					{post.data.description ? <p>{post.data.description}</p> : null}
 				</li>

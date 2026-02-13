@@ -1,11 +1,19 @@
 :root {
 	--bg: #0b0f19;
-	--card: rgba(255, 255, 255, 0.06);
+	--panel: rgba(255, 255, 255, 0.06);
+	--panel-2: rgba(255, 255, 255, 0.04);
 	--text: rgba(255, 255, 255, 0.92);
-	--muted: rgba(255, 255, 255, 0.65);
+	--muted: rgba(255, 255, 255, 0.66);
 	--border: rgba(255, 255, 255, 0.12);
+	--border-strong: rgba(255, 255, 255, 0.18);
 	--link: #a7c7ff;
 	--link-hover: #d8e7ff;
+	--shadow: 0 20px 70px rgba(0, 0, 0, 0.45);
+
+	--font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+		Helvetica, Arial, sans-serif;
+	--font-display: "Space Grotesk", var(--font-sans);
+	--font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
 }
 
 * {
@@ -21,13 +29,26 @@ body {
 
 body {
 	background:
-		radial-gradient(900px circle at 15% 10%, rgba(80, 140, 255, 0.25), transparent 60%),
-		radial-gradient(800px circle at 85% 30%, rgba(255, 115, 166, 0.18), transparent 55%),
+		radial-gradient(900px circle at 10% 10%, rgba(80, 140, 255, 0.26), transparent 60%),
+		radial-gradient(900px circle at 90% 25%, rgba(255, 160, 100, 0.18), transparent 55%),
+		radial-gradient(700px circle at 40% 90%, rgba(142, 255, 211, 0.1), transparent 55%),
 		linear-gradient(180deg, #070a12, var(--bg));
 	color: var(--text);
-	font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
-		sans-serif;
+	font-family: var(--font-sans);
 	line-height: 1.6;
+}
+
+body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	background-image:
+		linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+	background-size: 60px 60px;
+	opacity: 0.25;
+	mask-image: radial-gradient(800px circle at 50% 0%, rgba(0, 0, 0, 1), transparent 65%);
 }
 
 a {
@@ -37,6 +58,27 @@ a {
 
 a:hover {
 	color: var(--link-hover);
+}
+
+code,
+pre {
+	font-family: var(--font-mono);
+}
+
+.skip {
+	position: absolute;
+	left: -999px;
+	top: 10px;
+	padding: 10px 12px;
+	border-radius: 12px;
+	border: 1px solid var(--border-strong);
+	background: rgba(8, 12, 22, 0.95);
+	color: var(--text);
+	z-index: 999;
+}
+
+.skip:focus {
+	left: 12px;
 }
 
 .container {
@@ -62,9 +104,14 @@ a:hover {
 }
 
 .brand {
+	font-family: var(--font-display);
 	font-weight: 650;
 	letter-spacing: 0.2px;
 	color: var(--text);
+}
+
+.brand-dot {
+	opacity: 0.7;
 }
 
 .nav {
@@ -72,8 +119,81 @@ a:hover {
 	gap: 14px;
 }
 
+.nav a {
+	padding: 6px 10px;
+	border-radius: 12px;
+	color: var(--muted);
+	border: 1px solid transparent;
+}
+
+.nav a[aria-current='page'] {
+	color: var(--text);
+	background: rgba(255, 255, 255, 0.06);
+	border-color: var(--border);
+}
+
 .main {
 	padding: 28px 0 56px;
+}
+
+.main {
+	animation: fade-up 600ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.main {
+		animation: none;
+	}
+}
+
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Page transitions (native View Transitions API via Astro) */
+@media (prefers-reduced-motion: no-preference) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation-duration: 240ms;
+		animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+	}
+
+	::view-transition-old(root) {
+		animation-name: vt-out;
+	}
+
+	::view-transition-new(root) {
+		animation-name: vt-in;
+	}
+}
+
+@keyframes vt-in {
+	from {
+		opacity: 0;
+		transform: translateX(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes vt-out {
+	from {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	to {
+		opacity: 0;
+		transform: translateX(-8px);
+	}
 }
 
 .site-footer {
@@ -91,14 +211,16 @@ a:hover {
 .hero {
 	padding: 24px;
 	border: 1px solid var(--border);
-	background: var(--card);
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
 	border-radius: 16px;
 	margin: 0 0 20px;
+	box-shadow: var(--shadow);
 }
 
 .hero h1 {
 	margin: 0 0 6px;
-	font-size: 34px;
+	font-family: var(--font-display);
+	font-size: 38px;
 	line-height: 1.15;
 }
 
@@ -152,7 +274,38 @@ a:hover {
 	padding: 14px 16px;
 	border-radius: 14px;
 	border: 1px solid var(--border);
+	background: var(--panel-2);
+}
+
+.post-title {
+	font-family: var(--font-display);
+	font-weight: 650;
+	letter-spacing: 0.2px;
+	color: var(--text);
+}
+
+.post-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+	margin-top: 6px;
+}
+
+.pill-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.pill {
+	font-size: 12px;
+	line-height: 1;
+	padding: 6px 8px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
 	background: rgba(255, 255, 255, 0.04);
+	color: var(--muted);
 }
 
 .post-list li p {
@@ -162,6 +315,34 @@ a:hover {
 
 .prose h1 {
 	margin: 10px 0 16px;
+	font-family: var(--font-display);
+	letter-spacing: 0.2px;
+}
+
+.prose h2,
+.prose h3 {
+	font-family: var(--font-display);
+	letter-spacing: 0.1px;
+}
+
+.prose p {
+	color: rgba(255, 255, 255, 0.86);
+}
+
+.prose blockquote {
+	margin: 16px 0;
+	padding: 12px 14px;
+	border-left: 3px solid rgba(255, 255, 255, 0.2);
+	background: rgba(255, 255, 255, 0.04);
+	border-radius: 12px;
+}
+
+.prose ul {
+	padding-left: 1.1rem;
+}
+
+.prose li {
+	margin: 6px 0;
 }
 
 .prose a {
@@ -175,4 +356,14 @@ a:hover {
 	border-radius: 12px;
 	border: 1px solid var(--border);
 	background: rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 520px) {
+	.hero {
+		padding: 18px;
+	}
+
+	.hero h1 {
+		font-size: 32px;
+	}
 }

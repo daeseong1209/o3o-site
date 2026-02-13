@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
 
 type Props = {
 	title?: string;
@@ -7,6 +8,12 @@ type Props = {
 };
 
 const { title = 'o3o.team', description } = Astro.props;
+
+const pathname = Astro.url?.pathname ?? '/';
+const isActive = (href: string) => {
+	if (href === '/') return pathname === '/';
+	return pathname === href || pathname.startsWith(`${href}/`);
+};
 ---
 
 <!doctype html>
@@ -14,6 +21,14 @@ const { title = 'o3o.team', description } = Astro.props;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+		<meta name="theme-color" content="#0b0f19" />
+		<ViewTransitions />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Instrument+Sans:opsz,wght@8..14,400..700&family=Space+Grotesk:wght@400..700&display=swap"
+			rel="stylesheet"
+		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
@@ -21,16 +36,23 @@ const { title = 'o3o.team', description } = Astro.props;
 		{description ? <meta name="description" content={description} /> : null}
 	</head>
 	<body>
+		<a class="skip" href="#content">Skip to content</a>
 		<header class="site-header">
 			<div class="container">
-				<a class="brand" href="/">o3o.team</a>
+				<a class="brand" href="/" aria-label="Home">
+					<span class="brand-mark" aria-hidden="true">o3o</span>
+					<span class="brand-dot">.</span>
+					<span class="brand-mark" aria-hidden="true">team</span>
+				</a>
 				<nav class="nav">
-					<a href="/blog">Blog</a>
-					<a href="/admin" rel="nofollow">CMS</a>
+					<a href="/blog" aria-current={isActive('/blog') ? 'page' : undefined}>Blog</a>
+					<a href="/admin" rel="nofollow" aria-current={isActive('/admin') ? 'page' : undefined}>
+						CMS
+					</a>
 				</nav>
 			</div>
 		</header>
-		<main class="container main">
+		<main id="content" class="container main">
 			<slot />
 		</main>
 		<footer class="site-footer">

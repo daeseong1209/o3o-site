@@ -21,7 +21,18 @@ const { Content } = await post.render();
 
 <Layout title={`${post.data.title} | o3o.team`} description={post.data.description}>
 	<article class="prose">
-		<p class="muted">{post.data.pubDate.toISOString().slice(0, 10)}</p>
+		<div class="post-meta">
+			<time class="muted" datetime={post.data.pubDate.toISOString()}>
+				{post.data.pubDate.toISOString().slice(0, 10)}
+			</time>
+			{post.data.tags?.length ? (
+				<div class="pill-row">
+					{post.data.tags.map((t) => (
+						<span class="pill">{t}</span>
+					))}
+				</div>
+			) : null}
+		</div>
 		<h1>{post.data.title}</h1>
 		<Content />
 	</article>
