@@ -44,95 +44,73 @@ body {
 	background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
 }
 
-.cms-top {
-	position: static;
+.cms-shell {
+	padding: 0;
+}
+
+.cms-fab {
+	position: fixed;
+	right: 16px;
+	bottom: 16px;
+	z-index: 9999;
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	padding: 12px 14px;
-	border-bottom: 1px solid var(--border);
-	background: var(--header-bg);
-}
-
-.cms-brand {
-	color: var(--text);
-	text-decoration: none;
-	padding: 8px 10px;
-	border-radius: 12px;
-	border: 1px solid var(--border-strong);
-	background: var(--panel);
-}
-
-.cms-brand:hover {
-	background: var(--panel-2);
-}
-
-.cms-title {
-	font-family: "Space Grotesk", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
-	font-weight: 650;
-	color: var(--text);
-}
-
-.cms-actions {
-	display: flex;
-	align-items: center;
 	gap: 10px;
-}
-
-.cms-link {
-	color: var(--primary-2);
-	text-decoration: none;
-	padding: 8px 10px;
-	border-radius: 12px;
-	border: 1px solid rgba(49, 130, 246, 0.22);
-	background: rgba(49, 130, 246, 0.08);
-}
-
-.cms-link:hover {
-	background: rgba(49, 130, 246, 0.12);
+	align-items: center;
 }
 
 .theme-toggle {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	height: 34px;
-	padding: 0 10px;
-	border-radius: 12px;
+	height: 38px;
+	padding: 0 12px;
+	border-radius: 999px;
 	border: 1px solid var(--border);
-	background: var(--panel-2);
+	background: var(--panel);
 	color: var(--muted);
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 	font: inherit;
 	cursor: pointer;
 }
 
 .theme-toggle:hover {
-	background: var(--panel);
+	background: var(--panel-2);
 	border-color: var(--border-strong);
 	color: var(--text);
 }
 
-.cms-shell {
-	padding: 16px;
+.cms-fab-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 38px;
+	padding: 0 12px;
+	border-radius: 999px;
+	border: 1px solid var(--border);
+	background: var(--panel);
+	color: var(--text);
+	text-decoration: none;
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.cms-fab-link:hover {
+	background: var(--panel-2);
+	border-color: var(--border-strong);
 }
 
 /* Decap CMS mounts into #nc-root */
 #nc-root {
-	min-height: 70vh;
-	border-radius: 16px;
+	min-height: 100vh;
+	border-radius: 0;
 	overflow: visible;
-	box-shadow: var(--shadow);
+	box-shadow: none;
 	background: var(--panel);
-	border: 1px solid var(--border);
+	border: 0;
 }
 
 @media (max-width: 520px) {
-	.cms-top {
-		padding: 10px 12px;
-	}
-
-	.cms-shell {
-		padding: 12px;
+	.cms-fab {
+		right: 12px;
+		bottom: 12px;
 	}
 }

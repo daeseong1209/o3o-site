@@ -35,18 +35,12 @@
 		<link rel="stylesheet" href="/admin/admin.css" />
 	</head>
 	<body>
-		<header class="cms-top">
-			<a class="cms-brand" href="/" rel="nofollow">← Back to site</a>
-			<span class="cms-title">Content Manager</span>
-			<div class="cms-actions">
-				<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"></button>
-				<a class="cms-link" href="https://github.com/daeseong1209/o3o-site/pulls" rel="nofollow">
-					PRs
-				</a>
-			</div>
-		</header>
 		<div class="cms-shell">
 			<div id="nc-root"></div>
+		</div>
+		<div class="cms-fab" aria-hidden="false">
+			<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme"></button>
+			<a class="cms-fab-link" href="/" rel="nofollow">Site</a>
 		</div>
 		<script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 		<script src="/admin/preview-templates.js"></script>
