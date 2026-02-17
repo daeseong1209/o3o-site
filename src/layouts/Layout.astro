@@ -106,7 +106,7 @@ const isActive = (href: string) => {
 					meta.setAttribute('content', theme === 'dark' ? '#0b0f19' : '#f9fafb');
 				}
 
-				function updateToggles(theme) {
+				function updateThemeToggles(theme) {
 					var buttons = document.querySelectorAll('[data-theme-toggle]');
 					buttons.forEach(function (btn) {
 						btn.textContent = theme === 'dark' ? 'Dark' : 'Light';
@@ -133,7 +133,7 @@ const isActive = (href: string) => {
 					return root.dataset.theme === 'dark' ? 'dark' : 'light';
 				}
 
-				function apply(theme, persist) {
+				function applyTheme(theme, persist) {
 					root.dataset.theme = theme;
 					root.style.colorScheme = theme;
 					setMeta(theme);
@@ -144,13 +144,13 @@ const isActive = (href: string) => {
 							// ignore
 						}
 					}
-					updateToggles(theme);
+					updateThemeToggles(theme);
 				}
 
 				function init() {
 					var stored = getStoredTheme();
 					var theme = stored === 'dark' || stored === 'light' ? stored : getSystemTheme();
-					apply(theme, false);
+					applyTheme(theme, false);
 				}
 
 				init();
@@ -159,16 +159,17 @@ const isActive = (href: string) => {
 				document.addEventListener('click', function (e) {
 					var target = e.target;
 					if (!target || !target.closest) return;
-					var btn = target.closest('[data-theme-toggle]');
-					if (!btn) return;
-					apply(getTheme() === 'dark' ? 'light' : 'dark', true);
+					var themeBtn = target.closest('[data-theme-toggle]');
+					if (themeBtn) {
+						applyTheme(getTheme() === 'dark' ? 'light' : 'dark', true);
+					}
 				});
 
 				try {
 					if (!getStoredTheme() && window.matchMedia) {
 						var mq = window.matchMedia('(prefers-color-scheme: dark)');
 						var onChange = function (e) {
-							apply(e.matches ? 'dark' : 'light', false);
+							applyTheme(e.matches ? 'dark' : 'light', false);
 						};
 						if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onChange);
 						else if (typeof mq.addListener === 'function') mq.addListener(onChange);
