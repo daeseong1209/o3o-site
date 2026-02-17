@@ -55,6 +55,9 @@
 				var root = document.documentElement;
 				var btn = document.querySelector('[data-theme-toggle]');
 				if (!btn) return;
+				var cmsMark = 'data-o3o-cms-dark';
+				var cmsObserver = null;
+				var cmsRaf = 0;
 
 				function getStoredTheme() {
 					try {
@@ -66,6 +69,154 @@
 
 				function getTheme() {
 					return root.dataset.theme === 'dark' ? 'dark' : 'light';
+				}
+
+				function parseRgb(color) {
+					if (!color || color === 'transparent') return null;
+					var m = color.match(/rgba?\(([^)]+)\)/i);
+					if (!m) return null;
+					var parts = m[1].split(',').map(function (p) {
+						return parseFloat(p.trim());
+					});
+					if (parts.length < 3) return null;
+					if (Number.isNaN(parts[0]) || Number.isNaN(parts[1]) || Number.isNaN(parts[2])) return null;
+					return {
+						r: parts[0],
+						g: parts[1],
+						b: parts[2],
+						a: parts.length > 3 && !Number.isNaN(parts[3]) ? parts[3] : 1,
+					};
+				}
+
+				function isLightColor(color, minValue, alphaMin) {
+					var rgb = parseRgb(color);
+					if (!rgb) return false;
+					if (rgb.a < alphaMin) return false;
+					return rgb.r >= minValue && rgb.g >= minValue && rgb.b >= minValue;
+				}
+
+				function getDarkVars() {
+					var styles = getComputedStyle(root);
+					return {
+						panel: styles.getPropertyValue('--panel').trim() || 'rgba(255, 255, 255, 0.06)',
+						panel2: styles.getPropertyValue('--panel-2').trim() || 'rgba(255, 255, 255, 0.04)',
+						text: styles.getPropertyValue('--text').trim() || 'rgba(255, 255, 255, 0.92)',
+						border: styles.getPropertyValue('--border').trim() || 'rgba(255, 255, 255, 0.12)',
+					};
+				}
+
+				function clearCmsDarkPatches() {
+					var cmsRoot = document.getElementById('nc-root');
+					if (!cmsRoot) return;
+					var patched = cmsRoot.querySelectorAll('[' + cmsMark + ']');
+					patched.forEach(function (el) {
+						el.style.removeProperty('background-color');
+						el.style.removeProperty('color');
+						el.style.removeProperty('border-color');
+						el.removeAttribute(cmsMark);
+					});
+					cmsRoot.style.removeProperty('background-color');
+					cmsRoot.removeAttribute(cmsMark);
+				}
+
+				function patchCmsNode(el, vars) {
+					if (!el || !el.tagName) return;
+					var tag = el.tagName;
+					if (
+						tag === 'IMG' ||
+						tag === 'SVG' ||
+						tag === 'PATH' ||
+						tag === 'VIDEO' ||
+						tag === 'CANVAS' ||
+						tag === 'IFRAME'
+					)
+						return;
+
+					var computed = getComputedStyle(el);
+					var changed = false;
+
+					if (isLightColor(computed.backgroundColor, 232, 0.85)) {
+						el.style.setProperty('background-color', vars.panel, 'important');
+						changed = true;
+					}
+
+					if (isLightColor(computed.color, 220, 0.85)) {
+						el.style.setProperty('color', vars.text, 'important');
+						changed = true;
+					}
+
+					if (isLightColor(computed.borderColor, 210, 0.5)) {
+						el.style.setProperty('border-color', vars.border, 'important');
+						changed = true;
+					}
+
+					if (
+						tag === 'INPUT' ||
+						tag === 'TEXTAREA' ||
+						tag === 'SELECT' ||
+						el.getAttribute('role') === 'textbox' ||
+						el.isContentEditable
+					) {
+						el.style.setProperty('background-color', vars.panel2, 'important');
+						el.style.setProperty('color', vars.text, 'important');
+						el.style.setProperty('border-color', vars.border, 'important');
+						changed = true;
+					}
+
+					if (changed) {
+						el.setAttribute(cmsMark, '1');
+					}
+				}
+
+				function applyCmsDarkPatches() {
+					var cmsRoot = document.getElementById('nc-root');
+					if (!cmsRoot) return;
+					var vars = getDarkVars();
+
+					var run = function () {
+						if (getTheme() !== 'dark') return;
+						patchCmsNode(cmsRoot, vars);
+						cmsRoot.querySelectorAll('*').forEach(function (el) {
+							patchCmsNode(el, vars);
+						});
+					};
+
+					run();
+
+					if (cmsObserver) {
+						cmsObserver.disconnect();
+					}
+					cmsObserver = new MutationObserver(function () {
+						if (getTheme() !== 'dark') return;
+						if (cmsRaf) cancelAnimationFrame(cmsRaf);
+						cmsRaf = requestAnimationFrame(run);
+					});
+					cmsObserver.observe(cmsRoot, {
+						childList: true,
+						subtree: true,
+						attributes: true,
+						attributeFilter: ['class', 'style'],
+					});
+				}
+
+				function syncCmsTheme(theme) {
+					if (theme === 'dark') {
+						applyCmsDarkPatches();
+						setTimeout(function () {
+							applyCmsDarkPatches();
+						}, 250);
+						setTimeout(function () {
+							applyCmsDarkPatches();
+						}, 900);
+						return;
+					}
+
+					clearCmsDarkPatches();
+					if (cmsObserver) cmsObserver.disconnect();
+					if (cmsRaf) {
+						cancelAnimationFrame(cmsRaf);
+						cmsRaf = 0;
+					}
 				}
 
 				function setMeta(theme) {
@@ -92,6 +243,7 @@
 						}
 					}
 					update(theme);
+					syncCmsTheme(theme);
 					try {
 						var iframes = document.querySelectorAll('iframe');
 						iframes.forEach(function (frame) {
